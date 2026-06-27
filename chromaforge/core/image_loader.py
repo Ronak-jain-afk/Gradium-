@@ -4,16 +4,37 @@ from pathlib import Path
 from PySide6.QtGui import QImage
 from .constants import PREVIEW_LONG_EDGE
 
+_RAW_EXTENSIONS = frozenset({
+    ".cr2", ".cr3", ".nef", ".nrw", ".arw", ".dng", ".raf", ".orf",
+    ".rw2", ".pef", ".srw", ".x3f", ".raw", ".rwl", ".sr2", ".srf",
+    ".3fr", ".ari", ".bay", ".bmq", ".cap", ".cine", ".cs1", ".dcr",
+    ".drf", ".dsc", ".erf", ".fff", ".iiq", ".k25", ".kdc", ".mdc",
+    ".mef", ".mos", ".mrw", ".stn",
+})
+
 
 def load_image(path: str | Path) -> np.ndarray | None:
     path = Path(path)
     if not path.exists():
         return None
+    if path.suffix.lower() in _RAW_EXTENSIONS:
+        return load_raw(path)
     img = cv2.imread(str(path), cv2.IMREAD_COLOR)
     if img is None:
         return None
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return img_rgb.astype(np.float32) / 255.0
+
+
+def load_raw(path: Path) -> np.ndarray | None:
+    try:
+        import rawpy
+        raw = rawpy.imread(str(path))
+        rgb = raw.postprocess(use_camera_wb=True, output_bps=16, no_auto_bright=True, user_flip=0)
+        raw.close()
+        return rgb.astype(np.float32) / 65535.0
+    except Exception:
+        return None
 
 
 def compute_downsampled(img: np.ndarray, long_edge: int = PREVIEW_LONG_EDGE) -> np.ndarray:

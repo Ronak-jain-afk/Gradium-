@@ -4,6 +4,10 @@ import cv2
 from . import constants
 from .hsl import apply_hsl
 from .split_toning import apply_split_toning
+from .curves import apply_curves
+from .detail import apply_sharpen, apply_noise_reduction
+from .vignette import apply_vignette
+from .crop import apply_crop_rotate
 
 
 def apply_exposure(img: np.ndarray, stops: float) -> np.ndarray:
@@ -115,8 +119,13 @@ _PIPELINE_STEPS: dict[str, Callable] = {
     "hsl": apply_hsl,
     "saturation": apply_saturation,
     "splitToning": apply_split_toning,
+    "curves": apply_curves,
+    "sharpening": apply_sharpen,
+    "noiseReduction": apply_noise_reduction,
     "vibrance": apply_vibrance,
     "hue": apply_hue,
+    "vignette": apply_vignette,
+    "cropRotate": apply_crop_rotate,
 }
 
 

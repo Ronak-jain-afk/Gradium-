@@ -17,11 +17,6 @@ class SliderRow(QWidget):
         self._label.setFixedWidth(70)
         layout.addWidget(self._label)
 
-        self._slider = QSlider(Qt.Orientation.Horizontal)
-        self._slider.setRange(0, 10000)
-        self._slider.setValue(self._to_slider(default))
-        layout.addWidget(self._slider, 1)
-
         self._spin = QDoubleSpinBox()
         self._spin.setRange(min_val, max_val)
         self._spin.setSingleStep(step)
@@ -29,6 +24,11 @@ class SliderRow(QWidget):
         self._spin.setValue(default)
         self._spin.setFixedWidth(65)
         layout.addWidget(self._spin)
+
+        self._slider = QSlider(Qt.Orientation.Horizontal)
+        self._slider.setRange(0, 10000)
+        self._slider.setValue(self._to_slider(default))
+        layout.addWidget(self._slider, 1)
 
         self._slider.valueChanged.connect(self._on_slider)
         self._spin.valueChanged.connect(self._on_spin)
